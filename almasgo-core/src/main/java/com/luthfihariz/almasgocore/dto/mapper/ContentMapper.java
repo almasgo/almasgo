@@ -15,8 +15,12 @@ import java.util.List;
 
 public class ContentMapper {
 
-    public static ContentResponseDto toResponseDto(ObjectMapper objectMapper, Content content) throws JsonProcessingException {
-        List<String> tags = Arrays.asList(objectMapper.readValue(content.getTags(), String[].class));
+    public static ContentResponseDto toResponseDto(ObjectMapper objectMapper, Content content) {
+        List<String> tags = null;
+        try {
+            tags = Arrays.asList(objectMapper.readValue(content.getTags(), String[].class));
+        } catch (JsonProcessingException ignored) {
+        }
 
         return new ContentResponseDto(content.getId(),
                 content.getExternalUniqueId(), content.getTitle(),
@@ -24,10 +28,13 @@ public class ContentMapper {
                 content.getVisibility(), tags);
     }
 
-    public static Content fromRequestDto(ObjectMapper objectMapper, ContentRequestDto contentRequest) throws JsonProcessingException {
+    public static Content fromRequestDto(ObjectMapper objectMapper, ContentRequestDto contentRequest) {
         String tags = null;
         if (contentRequest.getTags() != null) {
-            tags = objectMapper.writeValueAsString(contentRequest.getTags());
+            try {
+                tags = objectMapper.writeValueAsString(contentRequest.getTags());
+            } catch (JsonProcessingException ignored) {
+            }
         }
 
         return new Content(contentRequest.getExternalUniqueId(),

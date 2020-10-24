@@ -8,9 +8,13 @@ import com.luthfihariz.almasgocore.repository.ContentRepository;
 import com.luthfihariz.almasgocore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -83,5 +87,24 @@ public class ContentServiceImpl implements ContentService {
         }
 
         return content.get();
+    }
+
+    @Override
+    public List<Content> getPaginatedContentByUserId(String email, Integer page, Integer size) {
+        User loggedInUser = userRepository.findByEmail(email);
+        if (loggedInUser == null) {
+            throw new UserNotFoundException();
+        }
+
+        if (page < 0) {
+            page = 0;
+        }
+
+        if (size > 20) {
+            size = 20;
+        }
+
+        Pageable pagination = PageRequest.of(page, size);
+        return contentRepository.findAllByUserId(loggedInUser.getId(), pagination);
     }
 }
