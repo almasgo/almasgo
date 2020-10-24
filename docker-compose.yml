@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  almasgo-mysql:
+    container_name: almasgo-mysql
+    image: mysql:8.0.22
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=vexkratm
+    networks:
+      - core_network
+    volumes:
+      - almasgo-mysql-data:/var/lib/mysql
+  almasgo-core:
+    container_name: almasgo-core
+    image: almasgo-core:0.0.1
+    ports:
+      - 8081:8080
+    depends_on:
+      - almasgo-mysql
+    networks:
+      - core_network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://almasgo-mysql:3306/almasgo_core?serverTimezone=Asia/Jakarta
+      - HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
+  
+networks:
+  core_network:
+    name: core_network
+
+volumes:
+  almasgo-mysql-data:
