@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.dto.response;
+package com.luthfihariz.almasgocore.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.dto.request;
+package com.luthfihariz.almasgocore.controller.dto.request;
 
 
 import lombok.AllArgsConstructor;

@@ -1,23 +1,25 @@
-package com.luthfihariz.almasgocore.dto.request;
+package com.luthfihariz.almasgocore.controller.dto.response;
 
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 @Setter
-public class ContentRequestDto {
-    private String externalUniqueId;
+public class ContentResponseDto {
+    private Long id;
+    private String uniqueExternalId;
     private String title;
     private String description;
     private Integer popularityInPercentage;
     private Integer visibility;
     private List<String> tags;
+    private Map<String, Object> attributes;
 }

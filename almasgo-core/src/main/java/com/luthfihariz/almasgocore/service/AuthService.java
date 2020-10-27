@@ -1,6 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
-import com.luthfihariz.almasgocore.dto.response.AuthResponseDto;
+import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
 import com.luthfihariz.almasgocore.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

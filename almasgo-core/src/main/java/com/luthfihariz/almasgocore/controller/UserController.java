@@ -1,21 +1,18 @@
 package com.luthfihariz.almasgocore.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.luthfihariz.almasgocore.dto.mapper.ContentMapper;
-import com.luthfihariz.almasgocore.dto.request.RegisterUserRequestDto;
-import com.luthfihariz.almasgocore.dto.response.ContentResponseDto;
-import com.luthfihariz.almasgocore.dto.response.RegisterUserResponseDto;
-import com.luthfihariz.almasgocore.model.Content;
+import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
+import com.luthfihariz.almasgocore.controller.dto.request.RegisterUserRequestDto;
+import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
+import com.luthfihariz.almasgocore.controller.dto.response.RegisterUserResponseDto;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.service.ContentService;
 import com.luthfihariz.almasgocore.service.UserService;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController

@@ -1,6 +1,6 @@
 package com.luthfihariz.almasgocore.exception;
 
-import com.luthfihariz.almasgocore.dto.ErrorCode;
+import com.luthfihariz.almasgocore.controller.dto.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 public class UserNotFoundException extends ApplicationException {

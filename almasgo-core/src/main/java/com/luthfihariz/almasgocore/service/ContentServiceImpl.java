@@ -1,19 +1,26 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.exception.AddContentFailException;
 import com.luthfihariz.almasgocore.exception.ContentNotFoundException;
 import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.model.Content;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.ContentRepository;
+import com.luthfihariz.almasgocore.repository.SearchableContentRepository;
 import com.luthfihariz.almasgocore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.query.IndexQuery;
+import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +33,9 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SearchableContentRepository searchableContentRepository;
+
     @Override
     public Content addContent(Content content, String email) {
         User loggedInUser = userRepository.findByEmail(email);
@@ -34,8 +44,14 @@ public class ContentServiceImpl implements ContentService {
             throw new UserNotFoundException();
         }
 
-        content.setUser(loggedInUser);
-        return contentRepository.save(content);
+        try {
+            content.setUser(loggedInUser);
+            Content savedContent = contentRepository.save(content); // save to db
+            searchableContentRepository.save(savedContent, loggedInUser.getId()); // save to elastic
+            return savedContent;
+        } catch (IOException e) {
+            throw new AddContentFailException();
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.luthfihariz.almasgocore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,30 +32,27 @@ public class Content {
     @Column(length = 1)
     private Integer visibility;
 
+    @JsonRawValue
     @Column(columnDefinition = "text")
     private String tags;
+
+    @JsonRawValue
+    @Column(columnDefinition = "text")
+    private String attributes;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Content(Long id, String title, String description, Integer popularityInPercentage, Integer visibility, String tags) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.popularityInPercentage = popularityInPercentage;
-        this.visibility = visibility;
-        this.tags = tags;
-    }
-
     public Content(String externalUniqueId, String title, String description, Integer popularityInPercentage,
-                   Integer visibility, String tags) {
+                   Integer visibility, String tags, String attributes) {
         this.externalUniqueId = externalUniqueId;
         this.title = title;
         this.description = description;
         this.popularityInPercentage = popularityInPercentage;
         this.visibility = visibility;
         this.tags = tags;
+        this.attributes = attributes;
     }
 }

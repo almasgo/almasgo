@@ -1,7 +1,7 @@
 package com.luthfihariz.almasgocore.controller;
 
-import com.luthfihariz.almasgocore.dto.ErrorCode;
-import com.luthfihariz.almasgocore.dto.ErrorDto;
+import com.luthfihariz.almasgocore.controller.dto.ErrorCode;
+import com.luthfihariz.almasgocore.controller.dto.ErrorDto;
 import com.luthfihariz.almasgocore.exception.ApplicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

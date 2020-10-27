@@ -1,8 +1,7 @@
 package com.luthfihariz.almasgocore.service;
 
 import com.luthfihariz.almasgocore.config.JwtTokenProvider;
-import com.luthfihariz.almasgocore.dto.request.AuthRequestDto;
-import com.luthfihariz.almasgocore.dto.response.AuthResponseDto;
+import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

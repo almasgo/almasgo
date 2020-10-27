@@ -1,7 +1,7 @@
 package com.luthfihariz.almasgocore.controller;
 
-import com.luthfihariz.almasgocore.dto.request.AuthRequestDto;
-import com.luthfihariz.almasgocore.dto.response.AuthResponseDto;
+import com.luthfihariz.almasgocore.controller.dto.request.AuthRequestDto;
+import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
