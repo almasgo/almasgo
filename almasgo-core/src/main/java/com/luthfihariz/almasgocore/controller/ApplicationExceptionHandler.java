@@ -5,6 +5,7 @@ import com.luthfihariz.almasgocore.controller.dto.ErrorDto;
 import com.luthfihariz.almasgocore.exception.ApplicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             ApplicationException appException = (ApplicationException) ex;
             errorDto = new ErrorDto(appException.getErrorCode(), appException.getErrorMessage());
             httpStatus = appException.getHttpStatus();
-        } else {
+        } else if (ex instanceof InternalAuthenticationServiceException) {
+            errorDto = new ErrorDto(ErrorCode.ERROR_WRONG_CREDENTIAL.toString(), "Wrong credential");
+            httpStatus = HttpStatus.UNAUTHORIZED;
+        } else{
             errorDto = new ErrorDto(ErrorCode.ERROR_INTERNAL_SERVER.toString(), "Internal server error");
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
