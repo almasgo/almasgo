@@ -55,17 +55,24 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public void removeContent(Long contentId) {
+    public void removeContent(Long contentId, String email) {
+        User loggedInUser = userRepository.findByEmail(email);
+
+        if (loggedInUser == null) {
+            throw new UserNotFoundException();
+        }
+
         try {
             Content content = contentRepository.getOne(contentId);
             contentRepository.delete(content);
-        } catch (EntityNotFoundException ex) {
+            searchableContentRepository.delete(content.getId(), loggedInUser.getId());
+        } catch (EntityNotFoundException | IOException ex) {
             throw new ContentNotFoundException();
         }
     }
 
     @Override
-    public Content updateContent(Content newContent) {
+    public Content updateContent(Content newContent, String email) throws IOException {
         try {
             Content content = contentRepository.getOne(newContent.getId());
 
@@ -89,7 +96,20 @@ public class ContentServiceImpl implements ContentService {
                 content.setVisibility(newContent.getVisibility());
             }
 
-            return contentRepository.save(content);
+            if (newContent.getAttributes() != null) {
+                content.setAttributes(newContent.getAttributes());
+            }
+
+            Content updatedContent = contentRepository.save(content);
+            Long userId = getUserFromEmail(email).getId();
+
+            if (updatedContent.getVisibility() == 0) {
+                searchableContentRepository.delete(updatedContent.getId(), userId);
+            } else {
+                searchableContentRepository.update(updatedContent, userId);
+            }
+
+            return updatedContent;
         } catch (EntityNotFoundException ex) {
             throw new ContentNotFoundException();
         }
@@ -122,5 +142,15 @@ public class ContentServiceImpl implements ContentService {
 
         Pageable pagination = PageRequest.of(page, size);
         return contentRepository.findAllByUserId(loggedInUser.getId(), pagination);
+    }
+
+    private User getUserFromEmail(String email) throws UserNotFoundException {
+        User loggedInUser = userRepository.findByEmail(email);
+
+        if (loggedInUser == null) {
+            throw new UserNotFoundException();
+        }
+
+        return loggedInUser;
     }
 }
