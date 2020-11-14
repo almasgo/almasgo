@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -39,16 +40,17 @@ public class ContentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeContent(@PathVariable("id") Long contentId) {
-        contentService.removeContent(contentId);
+    public ResponseEntity<Void> removeContent(@PathVariable("id") Long contentId, Principal principal) {
+        contentService.removeContent(contentId, principal.getName());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/{id}")
     public ContentResponseDto updateContent(@PathVariable("id") Long contentId,
-                                 @RequestBody ContentRequestDto contentRequestDto) throws JsonProcessingException {
+                                 @RequestBody ContentRequestDto contentRequestDto,
+                                            Principal principal) throws IOException {
         Content content = ContentMapper.fromRequestDto(objectMapper, contentRequestDto);
         content.setId(contentId);
-        return ContentMapper.toResponseDto(objectMapper, contentService.updateContent(content));
+        return ContentMapper.toResponseDto(objectMapper, contentService.updateContent(content, principal.getName()));
     }
 }

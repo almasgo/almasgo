@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.config;
+package com.luthfihariz.almasgocore.security;
 
 import com.luthfihariz.almasgocore.service.AuthService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,14 +40,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             email = jwtTokenProvider.getEmailFromToken(jwtToken);
         }
 
-        // check in db if email is exist
+        // check in db if userId is exist
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = authService.loadUserByUsername(email);
             // if token is valid configure Spring Security to manually set
             // authentication
             if (jwtTokenProvider.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

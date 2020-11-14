@@ -1,6 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
-import com.luthfihariz.almasgocore.config.JwtTokenProvider;
+import com.luthfihariz.almasgocore.security.JwtTokenProvider;
 import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.UserRepository;
@@ -9,11 +9,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {

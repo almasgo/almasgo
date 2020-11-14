@@ -5,6 +5,7 @@ import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.RegisterUserRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
 import com.luthfihariz.almasgocore.controller.dto.response.RegisterUserResponseDto;
+import com.luthfihariz.almasgocore.model.Content;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.service.ContentService;
 import com.luthfihariz.almasgocore.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +42,12 @@ public class UserController {
     public List<ContentResponseDto> getContentByUserId(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                                        @RequestParam(value = "size", defaultValue = "20") Integer size,
                                                        Principal principal) {
-        return contentService.getPaginatedContentByUserId(principal.getName(), page, size)
-                .stream()
+        List<Content> contents = contentService.getPaginatedContentByUserId(principal.getName(), page, size);
+        if (contents.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return contents.stream()
                 .map(content -> ContentMapper.toResponseDto(objectMapper, content))
                 .collect(Collectors.toList());
     }

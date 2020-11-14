@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.config;
+package com.luthfihariz.almasgocore.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,6 +24,7 @@ public class JwtTokenProvider implements Serializable {
     private String secret;
 
     //retrieve username from jwt token
+
     public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
@@ -50,9 +51,9 @@ public class JwtTokenProvider implements Serializable {
     }
 
     //generate token for user
-    public String generateToken(String email) {
+    public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, email);
+        return doGenerateToken(claims, username);
     }
 
     //while creating the token -
@@ -69,7 +70,7 @@ public class JwtTokenProvider implements Serializable {
 
     //validate token
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String emailFromToken = getEmailFromToken(token);
-        return (emailFromToken.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String email = getEmailFromToken(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

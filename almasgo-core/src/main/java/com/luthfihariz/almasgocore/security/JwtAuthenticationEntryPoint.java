@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.config;
+package com.luthfihariz.almasgocore.security;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
