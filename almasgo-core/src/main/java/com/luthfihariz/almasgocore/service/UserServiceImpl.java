@@ -1,6 +1,8 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.exception.InvalidOldPasswordException;
 import com.luthfihariz.almasgocore.exception.UserAlreadyRegisteredException;
+import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +25,19 @@ public class UserServiceImpl implements UserService {
 
         User encryptedUser = new User(user.getName(), user.getEmail(), passwordEncoder.encode(user.getPassword()));
         return userRepository.save(encryptedUser);
+    }
+
+    public User changePassword(String oldPassword, String newPassword, String email){
+        User loggedInUser = userRepository.findByEmail(email);
+        if (loggedInUser == null) {
+            throw new UserNotFoundException();
+        }
+
+        if(!passwordEncoder.matches(oldPassword, loggedInUser.getPassword())){
+            throw new InvalidOldPasswordException();
+        }
+
+        loggedInUser.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(loggedInUser);
     }
 }
