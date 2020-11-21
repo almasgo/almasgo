@@ -9,8 +9,8 @@ import java.io.IOException;
 
 public interface SearchableContentRepository {
 
-    void save(Content content, Long userId) throws IOException;
-    SearchHit[] search(SearchQuery searchQuery, Long userId) throws IOException;
-    DeleteResponse delete(Long contentId, Long userId) throws IOException;
-    void update(Content content, Long userId) throws IOException;
+    void save(Content content, Long engineId) throws IOException;
+    SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException;
+    DeleteResponse delete(Long contentId, Long engineId) throws IOException;
+    void update(Content content, Long engineId) throws IOException;
 }

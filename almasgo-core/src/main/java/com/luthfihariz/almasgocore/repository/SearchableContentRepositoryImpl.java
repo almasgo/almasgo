@@ -35,11 +35,11 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     @Autowired
     ObjectMapper objectMapper;
 
-    public void save(Content content, Long userId) throws IOException {
+    public void save(Content content, Long engineId) throws IOException {
         String json = objectMapper.writeValueAsString(content);
         Map<String, Object> map = objectMapper.readValue(json, Map.class);
 
-        IndexRequest indexRequest = Requests.indexRequest(getIndexNameFromUserId(userId));
+        IndexRequest indexRequest = Requests.indexRequest(getIndexNameFromEngineId(engineId));
         indexRequest.id(content.getId().toString());
         indexRequest.source(map);
 
@@ -48,8 +48,8 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     }
 
     @Override
-    public SearchHit[] search(SearchQuery searchQuery, Long userId) throws IOException {
-        SearchRequest searchRequest = Requests.searchRequest(getIndexNameFromUserId(userId));
+    public SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException {
+        SearchRequest searchRequest = Requests.searchRequest(getIndexNameFromEngineId(engineId));
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("title", searchQuery.getQuery()))
@@ -92,19 +92,19 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     }
 
     @Override
-    public DeleteResponse delete(Long contentId, Long userId) throws IOException {
-        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexNameFromUserId(userId));
+    public DeleteResponse delete(Long contentId, Long engineId) throws IOException {
+        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexNameFromEngineId(engineId));
         deleteRequest.id(contentId.toString());
         return restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
     }
 
     @Override
-    public void update(Content content, Long userId) throws IOException {
-        delete(content.getId(), userId);
-        save(content, userId);
+    public void update(Content content, Long engineId) throws IOException {
+        delete(content.getId(), engineId);
+        save(content, engineId);
     }
 
-    private String getIndexNameFromUserId(Long userId) {
-        return "content_u" + userId;
+    private String getIndexNameFromEngineId(Long engineId) {
+        return "content_e" + engineId;
     }
 }

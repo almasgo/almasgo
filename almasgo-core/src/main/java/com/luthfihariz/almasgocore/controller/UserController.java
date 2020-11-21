@@ -41,20 +41,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/content")
-    public List<ContentResponseDto> getContentByUserId(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                       @RequestParam(value = "size", defaultValue = "20") Integer size,
-                                                       Principal principal) {
-        List<Content> contents = contentService.getPaginatedContentByUserId(principal.getName(), page, size);
-        if (contents.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return contents.stream()
-                .map(content -> ContentMapper.toResponseDto(objectMapper, content))
-                .collect(Collectors.toList());
-    }
-
     @PostMapping("password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequestDto passwordRequest,
                                                Principal principal) {
