@@ -1,6 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
-import com.luthfihariz.almasgocore.exception.InvalidPasswordException;
+import com.luthfihariz.almasgocore.exception.InvalidOldPasswordException;
 import com.luthfihariz.almasgocore.exception.UserAlreadyRegisteredException;
 import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.model.User;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if(!passwordEncoder.matches(oldPassword, loggedInUser.getPassword())){
-            throw new InvalidPasswordException();
+            throw new InvalidOldPasswordException();
         }
 
         loggedInUser.setPassword(passwordEncoder.encode(newPassword));
