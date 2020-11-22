@@ -1,5 +1,7 @@
 package com.luthfihariz.almasgocore.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum EngineType {
     SANDBOX("sandbox"), PRODUCTION("prod");
 
@@ -9,6 +11,7 @@ public enum EngineType {
         this.code = code;
     }
 
+    @JsonValue
     public String getCode() {
         return code;
     }

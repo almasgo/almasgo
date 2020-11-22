@@ -9,7 +9,7 @@ public interface EngineService {
 
     void removeEngine(Long engineId);
 
-    void getEngine(Long engineId);
+    Engine getEngine(Long engineId);
 
     List<Engine> getPaginatedEngineByUserId(String email, Integer page, Integer size);
 }

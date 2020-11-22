@@ -1,5 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.exception.EngineNotFoundException;
 import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.model.Engine;
 import com.luthfihariz.almasgocore.model.User;
@@ -8,9 +9,12 @@ import com.luthfihariz.almasgocore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+@Service
 public class EngineServiceImpl implements EngineService {
 
     @Autowired
@@ -32,8 +36,12 @@ public class EngineServiceImpl implements EngineService {
     }
 
     @Override
-    public void getEngine(Long engineId) {
-
+    public Engine getEngine(Long engineId) {
+        try {
+            return engineRepository.getOne(engineId);
+        } catch (EntityNotFoundException ex) {
+            throw new EngineNotFoundException();
+        }
     }
 
     @Override
