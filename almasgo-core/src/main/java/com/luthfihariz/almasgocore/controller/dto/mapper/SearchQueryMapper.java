@@ -16,7 +16,7 @@ public class SearchQueryMapper {
         return new SearchQuery(searchRequestDto.getQuery(), searchRequestDto.getFilter(), searchRequestDto.getPage(), searchRequestDto.getSize());
     }
 
-    public static SearchResponseDto toSearchResponseDto(SearchResponse searchResponse) {
+    public static SearchResponseDto toSearchResponseDto(SearchResponse searchResponse, SearchRequestDto searchRequestDto) {
         SearchResponseDto searchResponseDto = new SearchResponseDto();
         searchResponseDto.setTook(searchResponse.getTook().getMillis());
         searchResponseDto.setMaxScore((double) searchResponse.getHits().getMaxScore());
@@ -26,6 +26,8 @@ public class SearchQueryMapper {
                 new SearchResultDto((double) searchHit.getScore(), searchHit.getSourceAsMap())).collect(Collectors.toList());
 
         searchResponseDto.setResults(searchResults);
+        searchResponseDto.setPage(searchRequestDto.getPage());
+        searchResponseDto.setSize(searchRequestDto.getSize());
 
         return searchResponseDto;
     }

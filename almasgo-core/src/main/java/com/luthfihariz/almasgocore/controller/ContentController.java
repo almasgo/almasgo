@@ -84,6 +84,6 @@ public class ContentController {
     @PostMapping("/{id}/search")
     public SearchResponseDto search(@RequestBody SearchRequestDto searchRequestDto, @PathVariable("id") Long engineId) throws IOException {
         SearchResponse searchResponse = searchService.search(SearchQueryMapper.fromSearchRequestDto(searchRequestDto), engineId);
-        return SearchQueryMapper.toSearchResponseDto(searchResponse);
+        return SearchQueryMapper.toSearchResponseDto(searchResponse, searchRequestDto);
     }
 }
