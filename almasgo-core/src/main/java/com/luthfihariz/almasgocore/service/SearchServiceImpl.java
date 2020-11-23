@@ -1,6 +1,9 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.SearchableContentRepository;
+import com.luthfihariz.almasgocore.repository.UserRepository;
+import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;

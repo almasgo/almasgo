@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.FilterRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RangeFilterDto;
 import com.luthfihariz.almasgocore.model.Content;
+import com.luthfihariz.almasgocore.model.User;
+import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -35,11 +37,17 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+
     public void save(Content content, Long engineId) throws IOException {
         String json = objectMapper.writeValueAsString(content);
         Map<String, Object> map = objectMapper.readValue(json, Map.class);
 
-        IndexRequest indexRequest = Requests.indexRequest(getIndexNameFromEngineId(engineId));
+        IndexRequest indexRequest = Requests.indexRequest(getIndexName(engineId));
         indexRequest.id(content.getId().toString());
         indexRequest.source(map);
 
@@ -49,7 +57,7 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
 
     @Override
     public SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException {
-        SearchRequest searchRequest = Requests.searchRequest(getIndexNameFromEngineId(engineId));
+        SearchRequest searchRequest = Requests.searchRequest(getIndexName(engineId));
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("title", searchQuery.getQuery()))
@@ -67,19 +75,30 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
                 for (String keyToFilter : filter.getRange().keySet()) {
                     RangeFilterDto valueToFilter = filter.getRange().get(keyToFilter);
 
-                    RangeQueryBuilder rangeQueryBuilder = QueryBuilders
-                            .rangeQuery(keyToFilter)
-                            .lte(valueToFilter.getLte())
-                            .lt(valueToFilter.getLt())
-                            .gt(valueToFilter.getGt())
-                            .gte(valueToFilter.getGte());
+                    RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(keyToFilter);
+
+                    if (valueToFilter.getLte() != null) {
+                        rangeQueryBuilder.lte(valueToFilter.getLte());
+                    }
+
+                    if (valueToFilter.getLt() != null) {
+                        rangeQueryBuilder.lt(valueToFilter.getLt());
+                    }
+
+                    if (valueToFilter.getGt() != null) {
+                        rangeQueryBuilder.gt(valueToFilter.getGt());
+                    }
+
+                    if (valueToFilter.getGte() != null) {
+                        rangeQueryBuilder.gte(valueToFilter.getGte());
+                    }
 
                     boolQueryBuilder.filter(rangeQueryBuilder);
                 }
 
             } else if (filter.getMatch() != null) {
                 for (String keyToFilter : filter.getMatch().keySet()) {
-                    Object valueToFilter = filter.getMatch().get(keyToFilter);
+                    Object valueToFilter = filter.getMatch().get(keyToFilter).toString().toLowerCase();
 
                     boolQueryBuilder.filter(QueryBuilders.termQuery(keyToFilter, valueToFilter));
                 }
@@ -93,7 +112,7 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
 
     @Override
     public DeleteResponse delete(Long contentId, Long engineId) throws IOException {
-        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexNameFromEngineId(engineId));
+        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexName(engineId));
         deleteRequest.id(contentId.toString());
         return restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
     }
@@ -104,7 +123,12 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
         save(content, engineId);
     }
 
-    private String getIndexNameFromEngineId(Long engineId) {
-        return "content_e" + engineId;
+    private String getIndexName(Long engineId) {
+        return "content_e" + engineId + "_u" + getLoggedInUserId();
+    }
+
+    private Long getLoggedInUserId() {
+        User loggedInUser = userRepository.findByEmail(authenticationFacade.getAuthentication().getName());
+        return loggedInUser.getId();
     }
 }
