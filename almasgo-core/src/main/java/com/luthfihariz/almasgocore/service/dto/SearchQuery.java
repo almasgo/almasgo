@@ -13,5 +13,6 @@ import lombok.Setter;
 public class SearchQuery {
     private String query;
     private FilterRequestDto filter;
-
+    private Integer page;
+    private Integer size;
 }

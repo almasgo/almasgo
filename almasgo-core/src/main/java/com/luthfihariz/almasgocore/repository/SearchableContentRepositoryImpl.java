@@ -19,7 +19,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -56,8 +55,10 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     }
 
     @Override
-    public SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException {
+    public SearchResponse search(SearchQuery searchQuery, Long engineId) throws IOException {
         SearchRequest searchRequest = Requests.searchRequest(getIndexName(engineId));
+
+
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("title", searchQuery.getQuery()))
@@ -105,9 +106,13 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
             }
         }
 
-        searchRequest.source(new SearchSourceBuilder().query(boolQueryBuilder));
-        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        return searchResponse.getHits().getHits();
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .from(searchQuery.getPage() * searchQuery.getSize())
+                .size(searchQuery.getSize())
+                .query(boolQueryBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+        return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
 
     @Override
