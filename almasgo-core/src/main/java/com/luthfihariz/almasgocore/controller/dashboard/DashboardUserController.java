@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.controller;
+package com.luthfihariz.almasgocore.controller.dashboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/dashboard/user")
+public class DashboardUserController {
 
     @Autowired
     private UserService userService;
@@ -40,20 +40,6 @@ public class UserController {
         return new RegisterUserResponseDto(newUser.getId(), newUser.getName(), newUser.getEmail());
     }
 
-
-    @GetMapping("/content")
-    public List<ContentResponseDto> getContentByUserId(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                       @RequestParam(value = "size", defaultValue = "20") Integer size,
-                                                       Principal principal) {
-        List<Content> contents = contentService.getPaginatedContentByUserId(principal.getName(), page, size);
-        if (contents.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return contents.stream()
-                .map(content -> ContentMapper.toResponseDto(objectMapper, content))
-                .collect(Collectors.toList());
-    }
 
     @PostMapping("password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequestDto passwordRequest,

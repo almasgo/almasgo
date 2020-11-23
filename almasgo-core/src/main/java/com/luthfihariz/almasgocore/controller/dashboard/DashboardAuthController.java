@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.controller;
+package com.luthfihariz.almasgocore.controller.dashboard;
 
 import com.luthfihariz.almasgocore.controller.dto.request.AuthRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
-@RequestMapping("/api/auth")
-public class AuthController {
+@RequestMapping("/dashboard/auth")
+public class DashboardAuthController {
 
     @Autowired
     private AuthService authService;

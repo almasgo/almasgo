@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ContentService {
-    public Content addContent(Content content, String email);
+    public Content addContent(Content content, Long engineId);
 
-    void removeContent(Long contentId, String email);
+    void removeContent(Long contentId, Long engineId);
 
-    Content updateContent(Content content, String email) throws IOException;
+    Content updateContent(Content content, Long engineId) throws IOException;
 
     Content getContent(Long contentId);
 
-    List<Content> getPaginatedContentByUserId(String email, Integer page, Integer size);
+    List<Content> getPaginatedContentByEngineId(Long engineId, Integer page, Integer size);
 }

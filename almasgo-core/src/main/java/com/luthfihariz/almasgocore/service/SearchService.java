@@ -6,5 +6,5 @@ import org.elasticsearch.search.SearchHit;
 import java.io.IOException;
 
 public interface SearchService {
-    SearchHit[] search(SearchQuery searchQuery, String email) throws IOException;
+    SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException;
 }

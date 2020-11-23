@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RangeFilterDto {
-    private String lte;
-    private String gte;
-    private String lt;
-    private String gt;
+    private Double lte;
+    private Double gte;
+    private Double lt;
+    private Double gt;
 }

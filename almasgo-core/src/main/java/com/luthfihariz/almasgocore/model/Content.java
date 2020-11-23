@@ -42,8 +42,8 @@ public class Content {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "engine_id")
+    private Engine engine;
 
     public Content(String externalUniqueId, String title, String description, Integer popularityInPercentage,
                    Integer visibility, String tags, String attributes) {
