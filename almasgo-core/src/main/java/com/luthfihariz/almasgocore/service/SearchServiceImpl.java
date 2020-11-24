@@ -5,6 +5,7 @@ import com.luthfihariz.almasgocore.repository.SearchableContentRepository;
 import com.luthfihariz.almasgocore.repository.UserRepository;
 import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class SearchServiceImpl implements SearchService {
     private SearchableContentRepository searchableContentRepository;
 
     @Override
-    public SearchHit[] search(SearchQuery searchQuery, Long engineId) throws IOException {
+    public SearchResponse search(SearchQuery searchQuery, Long engineId) throws IOException {
         return searchableContentRepository.search(searchQuery, engineId);
     }
 }

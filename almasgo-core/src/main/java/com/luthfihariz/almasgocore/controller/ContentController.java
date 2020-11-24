@@ -7,9 +7,11 @@ import com.luthfihariz.almasgocore.controller.dto.mapper.SearchQueryMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.ContentRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.SearchRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
+import com.luthfihariz.almasgocore.controller.dto.response.SearchResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
 import com.luthfihariz.almasgocore.service.ContentService;
 import com.luthfihariz.almasgocore.service.SearchService;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -80,7 +82,8 @@ public class ContentController {
 
 
     @PostMapping("/{id}/search")
-    public List<SearchHit> search(@RequestBody SearchRequestDto searchRequestDto, @PathVariable("id") Long engineId) throws IOException {
-        return Arrays.asList(searchService.search(SearchQueryMapper.fromSearchRequestDto(searchRequestDto), engineId));
+    public SearchResponseDto search(@RequestBody SearchRequestDto searchRequestDto, @PathVariable("id") Long engineId) throws IOException {
+        SearchResponse searchResponse = searchService.search(SearchQueryMapper.fromSearchRequestDto(searchRequestDto), engineId);
+        return SearchQueryMapper.toSearchResponseDto(searchResponse, searchRequestDto);
     }
 }

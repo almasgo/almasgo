@@ -12,6 +12,8 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class SearchRequestDto {
+    private Integer page;
+    private Integer size;
     private String query;
     private FilterRequestDto filter;
 }
