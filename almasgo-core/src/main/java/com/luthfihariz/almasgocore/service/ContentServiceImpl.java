@@ -1,5 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.exception.AddContentFailException;
 import com.luthfihariz.almasgocore.exception.ContentNotFoundException;
 import com.luthfihariz.almasgocore.exception.EngineNotFoundException;
@@ -11,13 +12,20 @@ import com.luthfihariz.almasgocore.repository.ContentRepository;
 import com.luthfihariz.almasgocore.repository.EngineRepository;
 import com.luthfihariz.almasgocore.repository.SearchableContentRepository;
 import com.luthfihariz.almasgocore.repository.UserRepository;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +62,31 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public ContentBulkResponseDto addContents(InputStream inputStream, Long engineId) throws IOException {
+        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        CSVParser csvParser = new CSVParser(fileReader,
+                CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
+
+        List<Content> contents = new ArrayList<>();
+        Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+
+        for (CSVRecord csvRecord : csvRecords) {
+            Content content = new Content(
+                    csvRecord.get("External Unique Id"),
+                    csvRecord.get("Title"),
+                    csvRecord.get("Description"),
+                    Integer.parseInt(csvRecord.get("Visibility")),
+                    csvRecord.get("Tags"),
+                    csvRecord.get("Attributes")
+            );
+            contents.add(content);
+        }
+
+        contentRepository.saveAll(contents);
+        return searchableContentRepository.saveAll(contents, engineId);
+    }
+
+    @Override
     public void removeContent(Long contentId, Long engineId) {
 
         try {
@@ -80,10 +113,6 @@ public class ContentServiceImpl implements ContentService {
 
             if (newContent.getTitle() != null) {
                 content.setTitle(newContent.getTitle());
-            }
-
-            if (newContent.getPopularityInPercentage() != null) {
-                content.setPopularityInPercentage(newContent.getPopularityInPercentage());
             }
 
             if (newContent.getVisibility() != null) {

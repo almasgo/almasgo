@@ -20,6 +20,14 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public SearchResponse search(SearchQuery searchQuery, Long engineId) throws IOException {
+        if (searchQuery.getSize() == null || searchQuery.getSize() > 20) {
+            searchQuery.setSize(20);
+        }
+
+        if (searchQuery.getPage() == null || searchQuery.getPage() > 10000) {
+            searchQuery.setPage(0);
+        }
+
         return searchableContentRepository.search(searchQuery, engineId);
     }
 }

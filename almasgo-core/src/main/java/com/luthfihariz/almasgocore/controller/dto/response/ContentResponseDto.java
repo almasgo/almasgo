@@ -18,7 +18,6 @@ public class ContentResponseDto {
     private String uniqueExternalId;
     private String title;
     private String description;
-    private Integer popularityInPercentage;
     private Integer visibility;
     private List<String> tags;
     private Map<String, Object> attributes;

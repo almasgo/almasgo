@@ -6,6 +6,7 @@ import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
 import com.luthfihariz.almasgocore.controller.dto.mapper.SearchQueryMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.ContentRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.SearchRequestDto;
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
 import com.luthfihariz.almasgocore.controller.dto.response.SearchResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,6 +45,12 @@ public class ContentController {
         Content content = ContentMapper.fromRequestDto(objectMapper, contentRequest);
         Content savedContent = contentService.addContent(content, engineId);
         return ContentMapper.toResponseDto(objectMapper, savedContent);
+    }
+
+    @PostMapping("/{id}/content/bulk")
+    public ContentBulkResponseDto addContents(@RequestParam("file") MultipartFile multipartFile,
+                                              @PathVariable("id") Long engineId) throws IOException {
+        return contentService.addContents(multipartFile.getInputStream(), engineId);
     }
 
     @GetMapping("/{id}/content")
