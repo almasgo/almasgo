@@ -24,7 +24,7 @@ public class ContentMapper {
 
         return new ContentResponseDto(content.getId(),
                 content.getExternalUniqueId(), content.getTitle(),
-                content.getDescription(), content.getPopularityInPercentage(),
+                content.getDescription(),
                 content.getVisibility(), tags, attributes);
     }
 
@@ -47,7 +47,7 @@ public class ContentMapper {
 
         return new Content(contentRequest.getExternalUniqueId(),
                 contentRequest.getTitle(), contentRequest.getDescription(),
-                contentRequest.getPopularityInPercentage(), contentRequest.getVisibility(),
+                contentRequest.getVisibility(),
                 tags, attributes
         );
     }

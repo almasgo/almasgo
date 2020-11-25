@@ -1,13 +1,17 @@
 package com.luthfihariz.almasgocore.service;
 
 
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public interface ContentService {
     public Content addContent(Content content, Long engineId);
+
+    ContentBulkResponseDto addContents(InputStream inputStream, Long engineId) throws IOException;
 
     void removeContent(Long contentId, Long engineId);
 

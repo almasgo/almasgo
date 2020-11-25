@@ -1,12 +1,16 @@
 package com.luthfihariz.almasgocore.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.FilterRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RangeFilterDto;
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -24,7 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @Repository
@@ -54,10 +60,40 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
         restHighLevelClient.index(indexRequest, options);
     }
 
+    public ContentBulkResponseDto saveAll(List<Content> contents, Long engineId) throws IOException {
+        BulkRequest bulkRequest = Requests.bulkRequest();
+
+        AtomicReference<Integer> failure = new AtomicReference<>(0);
+        contents.forEach(content -> {
+
+            try {
+                String json = objectMapper.writeValueAsString(content);
+                Map<String, Object> map = objectMapper.readValue(json, Map.class);
+
+                IndexRequest indexRequest = Requests
+                        .indexRequest(getIndexName(engineId))
+                        .source(map);
+                bulkRequest.add(indexRequest);
+            } catch (JsonProcessingException e) {
+                failure.getAndSet(failure.get() + 1);
+            }
+        });
+
+
+        RequestOptions options = RequestOptions.DEFAULT;
+        BulkResponse responses = restHighLevelClient.bulk(bulkRequest, options);
+        responses.forEach(response -> {
+            if (response.isFailed()) {
+                failure.getAndSet(failure.get() + 1);
+            }
+        });
+
+        return new ContentBulkResponseDto(contents.size() - failure.get(), failure.get(), contents.size());
+    }
+
     @Override
     public SearchResponse search(SearchQuery searchQuery, Long engineId) throws IOException {
         SearchRequest searchRequest = Requests.searchRequest(getIndexName(engineId));
-
 
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
