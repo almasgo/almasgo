@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    private EmailSenderService emailSenderService;
+
     public User register(User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new UserAlreadyRegisteredException();
@@ -79,20 +82,7 @@ public class UserServiceImpl implements UserService {
         context.setVariable("newPassword", newPassword);
         String content = templateEngine.process("email/forgot-password", context);
 
-        this.sendMail(from, to, subject, content);
+        emailSenderService.sendMail(from, to, subject, content);
     }
 
-    private void sendMail(String from, String to, String subject, String content){
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-            mimeMessageHelper.setFrom(from);
-            mimeMessageHelper.setTo(to);
-            mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(content, true);
-            javaMailSender.send(mimeMessage);
-        } catch (Exception e) {
-            throw new SendEmailFailException();
-        }
-    }
 }
