@@ -3,6 +3,7 @@ package com.luthfihariz.almasgocore.controller.dashboard;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.ChangePasswordRequestDto;
+import com.luthfihariz.almasgocore.controller.dto.request.ForgotPasswordRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RegisterUserRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
 import com.luthfihariz.almasgocore.controller.dto.response.RegisterUserResponseDto;
@@ -45,6 +46,12 @@ public class DashboardUserController {
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequestDto passwordRequest,
                                                Principal principal) {
         userService.changePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), principal.getName());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequestDto forgotPasswordRequest) {
+        userService.forgotPassword(forgotPasswordRequest.getEmail());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

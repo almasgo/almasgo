@@ -1,13 +1,18 @@
 package com.luthfihariz.almasgocore.service;
 
-import com.luthfihariz.almasgocore.exception.InvalidOldPasswordException;
-import com.luthfihariz.almasgocore.exception.UserAlreadyRegisteredException;
-import com.luthfihariz.almasgocore.exception.UserNotFoundException;
+import com.luthfihariz.almasgocore.exception.*;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import javax.mail.internet.MimeMessage;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,6 +22,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public User register(User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) {
@@ -39,5 +50,49 @@ public class UserServiceImpl implements UserService {
 
         loggedInUser.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(loggedInUser);
+    }
+
+    public void forgotPassword(String email) {
+        User loggedInUser = userRepository.findByEmail(email);
+        if (loggedInUser == null) {
+            throw new EmailNotFoundException();
+        }
+
+        String newPassword = this.generateNewPassword(8); // length new password
+        loggedInUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(loggedInUser);
+
+        this.sendForgotPasswordMail(loggedInUser, newPassword);
+    }
+
+    private String generateNewPassword(int lengthNewPassword){
+        return RandomStringUtils.randomAlphanumeric(lengthNewPassword);
+    }
+
+    private void sendForgotPasswordMail(User user, String newPassword){
+        String from = "noreply@almasgo.com";
+        String to = user.getEmail();
+        String subject = "Almasgo - New Password";
+
+        Context context = new Context();
+        context.setVariable("name", user.getName());
+        context.setVariable("newPassword", newPassword);
+        String content = templateEngine.process("email/forgot-password", context);
+
+        this.sendMail(from, to, subject, content);
+    }
+
+    private void sendMail(String from, String to, String subject, String content){
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+            mimeMessageHelper.setFrom(from);
+            mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(content, true);
+            javaMailSender.send(mimeMessage);
+        } catch (Exception e) {
+            throw new SendEmailFailException();
+        }
     }
 }
