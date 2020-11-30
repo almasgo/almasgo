@@ -23,10 +23,17 @@ public class EngineServiceImpl implements EngineService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ApiKeyGeneratorService apiKeyGeneratorService;
+
     @Override
     public Engine addEngine(Engine engine, String email) {
         User loggedInUser = getUserFromEmail(email);
         engine.setUser(loggedInUser);
+
+        String apiKey = apiKeyGeneratorService.generate();
+        engine.setApiKey(apiKey);
+
         return engineRepository.save(engine);
     }
 
