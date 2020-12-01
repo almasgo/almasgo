@@ -1,1 +1,0 @@
-ALTER TABLE engine DROP COLUMN updated_date;

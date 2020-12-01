@@ -11,4 +11,6 @@ import java.util.List;
 public interface EngineRepository extends JpaRepository<Engine, Long> {
 
     List<Engine> findAllByUserId(Long userId, Pageable pageable);
+
+    Engine findByIdAndApiKey(Long id, String apiKey);
 }

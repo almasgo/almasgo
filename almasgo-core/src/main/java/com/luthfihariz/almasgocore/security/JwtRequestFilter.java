@@ -1,5 +1,6 @@
 package com.luthfihariz.almasgocore.security;
 
+import com.luthfihariz.almasgocore.service.ApiKeyValidatorService;
 import com.luthfihariz.almasgocore.service.AuthService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException,
             ExpiredJwtException, IllegalArgumentException {
-
         final String requestTokenHeader = request.getHeader("Authorization");
 
         String email = null;

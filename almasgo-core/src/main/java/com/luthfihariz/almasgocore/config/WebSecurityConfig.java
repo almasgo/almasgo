@@ -1,6 +1,7 @@
 package com.luthfihariz.almasgocore.config;
 
 
+import com.luthfihariz.almasgocore.security.ApiKeyRequestFilter;
 import com.luthfihariz.almasgocore.security.JwtAuthenticationEntryPoint;
 import com.luthfihariz.almasgocore.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    private ApiKeyRequestFilter apiKeyRequestFilter;
 
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -70,7 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // Add a filter to validate the tokens with every request
-        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(apiKeyRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtRequestFilter, ApiKeyRequestFilter.class);
     }
 }
 

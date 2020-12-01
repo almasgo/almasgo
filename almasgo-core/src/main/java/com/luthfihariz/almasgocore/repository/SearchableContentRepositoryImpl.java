@@ -169,7 +169,6 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     }
 
     private Long getLoggedInUserId() {
-        User loggedInUser = userRepository.findByEmail(authenticationFacade.getAuthentication().getName());
-        return loggedInUser.getId();
+        return authenticationFacade.getEnginePrincipal().getUserId();
     }
 }
