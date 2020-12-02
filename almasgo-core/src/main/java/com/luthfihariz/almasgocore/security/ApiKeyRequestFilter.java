@@ -1,9 +1,8 @@
 package com.luthfihariz.almasgocore.security;
 
-import com.luthfihariz.almasgocore.model.principal.EnginePrincipal;
+import com.luthfihariz.almasgocore.model.principal.SearchClientPrincipal;
 import com.luthfihariz.almasgocore.service.ApiKeyValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 @Component
 public class ApiKeyRequestFilter extends OncePerRequestFilter {
@@ -37,7 +35,7 @@ public class ApiKeyRequestFilter extends OncePerRequestFilter {
                 var authorities = new ArrayList<GrantedAuthority>();
                 authorities.add(new SimpleGrantedAuthority("search"));
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        new EnginePrincipal(engine.getUser().getId(), engine.getId()), null,
+                        new SearchClientPrincipal(engine.getUser().getId(), engine.getId()), null,
                         authorities);
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);

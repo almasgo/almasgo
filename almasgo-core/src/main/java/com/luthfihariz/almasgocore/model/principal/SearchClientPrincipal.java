@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class EnginePrincipal {
+public class SearchClientPrincipal {
     private Long userId;
     private Long engineId;
 }

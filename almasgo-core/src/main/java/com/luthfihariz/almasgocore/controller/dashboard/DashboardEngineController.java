@@ -38,7 +38,8 @@ public class DashboardEngineController {
 
     @GetMapping("/{id}")
     public EngineResponseDto getEngine(@PathVariable("id") Long id) {
-        return engineMapper.toResponseDto(engineService.getEngine(id));
+        var engine = engineService.getEngine(id);
+        return engineMapper.toResponseDto(engine);
     }
 
     @GetMapping
