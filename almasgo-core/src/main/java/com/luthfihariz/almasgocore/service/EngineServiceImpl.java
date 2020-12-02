@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class EngineServiceImpl implements EngineService {
@@ -23,10 +24,17 @@ public class EngineServiceImpl implements EngineService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ApiKeyGeneratorService apiKeyGeneratorService;
+
     @Override
     public Engine addEngine(Engine engine, String email) {
         User loggedInUser = getUserFromEmail(email);
         engine.setUser(loggedInUser);
+
+        String apiKey = apiKeyGeneratorService.generate();
+        engine.setApiKey(apiKey);
+
         return engineRepository.save(engine);
     }
 
@@ -38,8 +46,8 @@ public class EngineServiceImpl implements EngineService {
     @Override
     public Engine getEngine(Long engineId) {
         try {
-            return engineRepository.getOne(engineId);
-        } catch (EntityNotFoundException ex) {
+            return engineRepository.findById(engineId).orElseThrow();
+        } catch (NoSuchElementException ex) {
             throw new EngineNotFoundException();
         }
     }

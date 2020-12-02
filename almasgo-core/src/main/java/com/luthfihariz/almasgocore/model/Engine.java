@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Engine {
+public class Engine extends DateAudit {
 
     @Id
     @GeneratedValue
@@ -30,6 +30,9 @@ public class Engine {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(length = 64)
+    private String apiKey;
 
     public Engine(String name, EngineType type) {
         this.name = name;

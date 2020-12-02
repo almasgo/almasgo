@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -47,7 +48,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Content addContent(Content content, Long engineId) {
 
-        Engine engine = engineRepository.getOne(engineId);
+        Engine engine = engineRepository.findById(engineId).orElseThrow();
 
         try {
             content.setEngine(engine);
@@ -56,13 +57,14 @@ public class ContentServiceImpl implements ContentService {
             return savedContent;
         } catch (IOException e) {
             throw new AddContentFailException();
-        } catch (EntityNotFoundException ex) {
+        } catch (NoSuchElementException ex) {
             throw new EngineNotFoundException();
         }
     }
 
     @Override
     public ContentBulkResponseDto addContents(InputStream inputStream, Long engineId) throws IOException {
+        Engine engine = engineRepository.findById(engineId).orElseThrow(EngineNotFoundException::new);
         BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
         CSVParser csvParser = new CSVParser(fileReader,
                 CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
@@ -79,6 +81,7 @@ public class ContentServiceImpl implements ContentService {
                     csvRecord.get("Tags"),
                     csvRecord.get("Attributes")
             );
+            content.setEngine(engine);
             contents.add(content);
         }
 
@@ -90,10 +93,10 @@ public class ContentServiceImpl implements ContentService {
     public void removeContent(Long contentId, Long engineId) {
 
         try {
-            Content content = contentRepository.getOne(contentId);
+            Content content = contentRepository.findById(contentId).orElseThrow();
             contentRepository.delete(content);
             searchableContentRepository.delete(content.getId(), engineId);
-        } catch (EntityNotFoundException | IOException ex) {
+        } catch (NoSuchElementException | IOException ex) {
             throw new ContentNotFoundException();
         }
     }
@@ -101,7 +104,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Content updateContent(Content newContent, Long engineId) throws IOException {
         try {
-            Content content = contentRepository.getOne(newContent.getId());
+            Content content = contentRepository.findById(newContent.getId()).orElseThrow();
 
             if (newContent.getDescription() != null) {
                 content.setDescription(newContent.getDescription());
@@ -132,19 +135,14 @@ public class ContentServiceImpl implements ContentService {
             }
 
             return updatedContent;
-        } catch (EntityNotFoundException ex) {
+        } catch (NoSuchElementException ex) {
             throw new ContentNotFoundException();
         }
     }
 
     @Override
     public Content getContent(Long contentId) {
-        Optional<Content> content = contentRepository.findById(contentId);
-        if (content.isEmpty()) {
-            throw new ContentNotFoundException();
-        }
-
-        return content.get();
+        return contentRepository.findById(contentId).orElseThrow(ContentNotFoundException::new);
     }
 
     @Override

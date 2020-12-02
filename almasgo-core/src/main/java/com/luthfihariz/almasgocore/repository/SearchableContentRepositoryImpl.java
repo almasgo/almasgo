@@ -6,7 +6,6 @@ import com.luthfihariz.almasgocore.controller.dto.request.FilterRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RangeFilterDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
-import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -169,7 +168,6 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     }
 
     private Long getLoggedInUserId() {
-        User loggedInUser = userRepository.findByEmail(authenticationFacade.getAuthentication().getName());
-        return loggedInUser.getId();
+        return authenticationFacade.getSearchClientPrincipal().getUserId();
     }
 }
