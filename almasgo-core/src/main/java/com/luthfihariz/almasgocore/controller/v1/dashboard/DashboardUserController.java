@@ -1,35 +1,29 @@
-package com.luthfihariz.almasgocore.controller.dashboard;
+package com.luthfihariz.almasgocore.controller.v1.dashboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.luthfihariz.almasgocore.controller.dto.mapper.ContentMapper;
-import com.luthfihariz.almasgocore.controller.dto.request.ChangePasswordRequestDto;
-import com.luthfihariz.almasgocore.controller.dto.request.ForgotPasswordRequestDto;
-import com.luthfihariz.almasgocore.controller.dto.request.RegisterUserRequestDto;
-import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.ChangePasswordRequestDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.ForgotPasswordRequestDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.RegisterUserRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.RegisterUserResponseDto;
-import com.luthfihariz.almasgocore.model.Content;
+import com.luthfihariz.almasgocore.middleware.v1.ContentMiddleware;
+import com.luthfihariz.almasgocore.middleware.v1.UserMiddleware;
 import com.luthfihariz.almasgocore.model.User;
-import com.luthfihariz.almasgocore.service.ContentService;
-import com.luthfihariz.almasgocore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/dashboard/user")
+@RequestMapping("/dashboard/v1/user")
 public class DashboardUserController {
 
     @Autowired
-    private UserService userService;
+    private UserMiddleware userMiddleware;
 
     @Autowired
-    private ContentService contentService;
+    private ContentMiddleware contentMiddleware;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,7 +31,7 @@ public class DashboardUserController {
     @PostMapping
     public RegisterUserResponseDto register(@RequestBody RegisterUserRequestDto userRequest) {
         User user = new User(userRequest.getName(), userRequest.getEmail(), userRequest.getPassword());
-        User newUser = userService.register(user);
+        User newUser = userMiddleware.register(user);
         return new RegisterUserResponseDto(newUser.getId(), newUser.getName(), newUser.getEmail());
     }
 
@@ -45,13 +39,13 @@ public class DashboardUserController {
     @PostMapping("password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequestDto passwordRequest,
                                                Principal principal) {
-        userService.changePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), principal.getName());
+        userMiddleware.changePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), principal.getName());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequestDto forgotPasswordRequest) {
-        userService.forgotPassword(forgotPasswordRequest.getEmail());
+        userMiddleware.forgotPassword(forgotPasswordRequest.getEmail());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

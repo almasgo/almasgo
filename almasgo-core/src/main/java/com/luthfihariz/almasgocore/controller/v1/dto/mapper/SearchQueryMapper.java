@@ -1,6 +1,6 @@
-package com.luthfihariz.almasgocore.controller.dto.mapper;
+package com.luthfihariz.almasgocore.controller.v1.dto.mapper;
 
-import com.luthfihariz.almasgocore.controller.dto.request.SearchRequestDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.SearchRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.SearchResponseDto;
 import com.luthfihariz.almasgocore.controller.dto.response.SearchResultDto;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;

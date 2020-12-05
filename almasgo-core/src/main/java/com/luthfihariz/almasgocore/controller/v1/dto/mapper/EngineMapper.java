@@ -1,6 +1,6 @@
-package com.luthfihariz.almasgocore.controller.dto.mapper;
+package com.luthfihariz.almasgocore.controller.v1.dto.mapper;
 
-import com.luthfihariz.almasgocore.controller.dto.request.EngineRequestDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.EngineRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.EngineResponseDto;
 import com.luthfihariz.almasgocore.model.Engine;
 import org.springframework.stereotype.Component;
