@@ -1,9 +1,9 @@
-package com.luthfihariz.almasgocore.controller.dto.mapper;
+package com.luthfihariz.almasgocore.controller.v1.dto.mapper;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.luthfihariz.almasgocore.controller.dto.request.ContentRequestDto;
+import com.luthfihariz.almasgocore.controller.v1.dto.request.ContentRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
 
@@ -24,7 +24,7 @@ public class ContentMapper {
 
         return new ContentResponseDto(content.getId(),
                 content.getExternalUniqueId(), content.getTitle(),
-                content.getDescription(), content.getPopularityInPercentage(),
+                content.getDescription(),
                 content.getVisibility(), tags, attributes);
     }
 
@@ -47,7 +47,7 @@ public class ContentMapper {
 
         return new Content(contentRequest.getExternalUniqueId(),
                 contentRequest.getTitle(), contentRequest.getDescription(),
-                contentRequest.getPopularityInPercentage(), contentRequest.getVisibility(),
+                contentRequest.getVisibility(),
                 tags, attributes
         );
     }

@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.controller.dto.request;
+package com.luthfihariz.almasgocore.controller.v1.dto.request;
 
 
 import lombok.AllArgsConstructor;
@@ -17,7 +17,6 @@ public class ContentRequestDto {
     private String externalUniqueId;
     private String title;
     private String description;
-    private Integer popularityInPercentage;
     private Integer visibility;
     private List<String> tags;
     private Map<String, Object> attributes;

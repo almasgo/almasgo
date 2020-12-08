@@ -1,4 +1,4 @@
-package com.luthfihariz.almasgocore.controller.dto.request;
+package com.luthfihariz.almasgocore.controller.dto.response;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AuthRequestDto {
-    private String email;
-    private String password;
+public class EngineResponseDto {
+    private Long id;
+    private String name;
+    private String type;
 }

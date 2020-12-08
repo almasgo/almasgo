@@ -1,12 +1,14 @@
 package com.luthfihariz.almasgocore.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue
@@ -22,7 +24,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
-    private Set<Content> contents;
+    private Set<Engine> engines;
 
     public User() {
     }

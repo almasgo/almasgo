@@ -1,10 +1,15 @@
 package com.luthfihariz.almasgocore.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.FilterRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RangeFilterDto;
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
+import com.luthfihariz.almasgocore.security.AuthenticationFacade;
 import com.luthfihariz.almasgocore.service.dto.SearchQuery;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -17,13 +22,14 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @Repository
@@ -35,11 +41,17 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
     @Autowired
     ObjectMapper objectMapper;
 
-    public void save(Content content, Long userId) throws IOException {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+
+    public void save(Content content, Long engineId) throws IOException {
         String json = objectMapper.writeValueAsString(content);
         Map<String, Object> map = objectMapper.readValue(json, Map.class);
 
-        IndexRequest indexRequest = Requests.indexRequest(getIndexNameFromUserId(userId));
+        IndexRequest indexRequest = Requests.indexRequest(getIndexName(engineId));
         indexRequest.id(content.getId().toString());
         indexRequest.source(map);
 
@@ -47,9 +59,41 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
         restHighLevelClient.index(indexRequest, options);
     }
 
+    public ContentBulkResponseDto saveAll(List<Content> contents, Long engineId) throws IOException {
+        BulkRequest bulkRequest = Requests.bulkRequest();
+
+        AtomicReference<Integer> failure = new AtomicReference<>(0);
+        contents.forEach(content -> {
+
+            try {
+                String json = objectMapper.writeValueAsString(content);
+                Map<String, Object> map = objectMapper.readValue(json, Map.class);
+
+                IndexRequest indexRequest = Requests
+                        .indexRequest(getIndexName(engineId))
+                        .source(map);
+                bulkRequest.add(indexRequest);
+            } catch (JsonProcessingException e) {
+                failure.getAndSet(failure.get() + 1);
+            }
+        });
+
+
+        RequestOptions options = RequestOptions.DEFAULT;
+        BulkResponse responses = restHighLevelClient.bulk(bulkRequest, options);
+        responses.forEach(response -> {
+            if (response.isFailed()) {
+                failure.getAndSet(failure.get() + 1);
+            }
+        });
+
+        return new ContentBulkResponseDto(contents.size() - failure.get(), failure.get(), contents.size());
+    }
+
     @Override
-    public SearchHit[] search(SearchQuery searchQuery, Long userId) throws IOException {
-        SearchRequest searchRequest = Requests.searchRequest(getIndexNameFromUserId(userId));
+    public SearchResponse search(SearchQuery searchQuery, Long engineId) throws IOException {
+        SearchRequest searchRequest = Requests.searchRequest(getIndexName(engineId));
+
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
                 .should(QueryBuilders.matchQuery("title", searchQuery.getQuery()))
@@ -67,44 +111,63 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
                 for (String keyToFilter : filter.getRange().keySet()) {
                     RangeFilterDto valueToFilter = filter.getRange().get(keyToFilter);
 
-                    RangeQueryBuilder rangeQueryBuilder = QueryBuilders
-                            .rangeQuery(keyToFilter)
-                            .lte(valueToFilter.getLte())
-                            .lt(valueToFilter.getLt())
-                            .gt(valueToFilter.getGt())
-                            .gte(valueToFilter.getGte());
+                    RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(keyToFilter);
+
+                    if (valueToFilter.getLte() != null) {
+                        rangeQueryBuilder.lte(valueToFilter.getLte());
+                    }
+
+                    if (valueToFilter.getLt() != null) {
+                        rangeQueryBuilder.lt(valueToFilter.getLt());
+                    }
+
+                    if (valueToFilter.getGt() != null) {
+                        rangeQueryBuilder.gt(valueToFilter.getGt());
+                    }
+
+                    if (valueToFilter.getGte() != null) {
+                        rangeQueryBuilder.gte(valueToFilter.getGte());
+                    }
 
                     boolQueryBuilder.filter(rangeQueryBuilder);
                 }
 
             } else if (filter.getMatch() != null) {
                 for (String keyToFilter : filter.getMatch().keySet()) {
-                    Object valueToFilter = filter.getMatch().get(keyToFilter);
+                    Object valueToFilter = filter.getMatch().get(keyToFilter).toString().toLowerCase();
 
                     boolQueryBuilder.filter(QueryBuilders.termQuery(keyToFilter, valueToFilter));
                 }
             }
         }
 
-        searchRequest.source(new SearchSourceBuilder().query(boolQueryBuilder));
-        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        return searchResponse.getHits().getHits();
+        SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
+                .from(searchQuery.getPage() * searchQuery.getSize())
+                .size(searchQuery.getSize())
+                .query(boolQueryBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+        return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
 
     @Override
-    public DeleteResponse delete(Long contentId, Long userId) throws IOException {
-        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexNameFromUserId(userId));
+    public DeleteResponse delete(Long contentId, Long engineId) throws IOException {
+        DeleteRequest deleteRequest = Requests.deleteRequest(getIndexName(engineId));
         deleteRequest.id(contentId.toString());
         return restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
     }
 
     @Override
-    public void update(Content content, Long userId) throws IOException {
-        delete(content.getId(), userId);
-        save(content, userId);
+    public void update(Content content, Long engineId) throws IOException {
+        delete(content.getId(), engineId);
+        save(content, engineId);
     }
 
-    private String getIndexNameFromUserId(Long userId) {
-        return "content_u" + userId;
+    private String getIndexName(Long engineId) {
+        return "content_e" + engineId + "_u" + getLoggedInUserId();
+    }
+
+    private Long getLoggedInUserId() {
+        return authenticationFacade.getSearchClientPrincipal().getUserId();
     }
 }

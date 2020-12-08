@@ -26,9 +26,6 @@ public class Content {
     @Column(columnDefinition = "text")
     private String description;
 
-    @Column(length = 2)
-    private Integer popularityInPercentage;
-
     @Column(length = 1)
     private Integer visibility;
 
@@ -42,15 +39,14 @@ public class Content {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "engine_id")
+    private Engine engine;
 
-    public Content(String externalUniqueId, String title, String description, Integer popularityInPercentage,
+    public Content(String externalUniqueId, String title, String description,
                    Integer visibility, String tags, String attributes) {
         this.externalUniqueId = externalUniqueId;
         this.title = title;
         this.description = description;
-        this.popularityInPercentage = popularityInPercentage;
         this.visibility = visibility;
         this.tags = tags;
         this.attributes = attributes;

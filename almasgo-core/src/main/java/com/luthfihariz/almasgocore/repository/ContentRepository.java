@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface ContentRepository extends JpaRepository<Content, Long> {
 
-    public List<Content> findAllByUserId(Long userId, Pageable pageable);
+    public List<Content> findAllByEngineId(Long engineId, Pageable pageable);
 }

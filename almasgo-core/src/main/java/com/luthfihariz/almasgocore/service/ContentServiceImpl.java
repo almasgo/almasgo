@@ -1,27 +1,33 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.exception.AddContentFailException;
 import com.luthfihariz.almasgocore.exception.ContentNotFoundException;
+import com.luthfihariz.almasgocore.exception.EngineNotFoundException;
 import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.model.Content;
+import com.luthfihariz.almasgocore.model.Engine;
 import com.luthfihariz.almasgocore.model.User;
 import com.luthfihariz.almasgocore.repository.ContentRepository;
+import com.luthfihariz.almasgocore.repository.EngineRepository;
 import com.luthfihariz.almasgocore.repository.SearchableContentRepository;
 import com.luthfihariz.almasgocore.repository.UserRepository;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -34,40 +40,71 @@ public class ContentServiceImpl implements ContentService {
     private UserRepository userRepository;
 
     @Autowired
+    private EngineRepository engineRepository;
+
+    @Autowired
     private SearchableContentRepository searchableContentRepository;
 
     @Override
-    public Content addContent(Content content, String email) {
-        User loggedInUser = userRepository.findByEmail(email);
+    public Content addContent(Content content, Long engineId) {
 
-        if (loggedInUser == null) {
-            throw new UserNotFoundException();
-        }
+        Engine engine = engineRepository.findById(engineId).orElseThrow();
 
         try {
-            content.setUser(loggedInUser);
+            content.setEngine(engine);
             Content savedContent = contentRepository.save(content); // save to db
-            searchableContentRepository.save(savedContent, loggedInUser.getId()); // save to elastic
+            searchableContentRepository.save(savedContent, engine.getId()); // save to elastic
             return savedContent;
         } catch (IOException e) {
             throw new AddContentFailException();
+        } catch (NoSuchElementException ex) {
+            throw new EngineNotFoundException();
         }
     }
 
     @Override
-    public void removeContent(Long contentId) {
+    public ContentBulkResponseDto addContents(InputStream inputStream, Long engineId) throws IOException {
+        Engine engine = engineRepository.findById(engineId).orElseThrow(EngineNotFoundException::new);
+        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        CSVParser csvParser = new CSVParser(fileReader,
+                CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
+
+        List<Content> contents = new ArrayList<>();
+        Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+
+        for (CSVRecord csvRecord : csvRecords) {
+            Content content = new Content(
+                    csvRecord.get("External Unique Id"),
+                    csvRecord.get("Title"),
+                    csvRecord.get("Description"),
+                    Integer.parseInt(csvRecord.get("Visibility")),
+                    csvRecord.get("Tags"),
+                    csvRecord.get("Attributes")
+            );
+            content.setEngine(engine);
+            contents.add(content);
+        }
+
+        contentRepository.saveAll(contents);
+        return searchableContentRepository.saveAll(contents, engineId);
+    }
+
+    @Override
+    public void removeContent(Long contentId, Long engineId) {
+
         try {
-            Content content = contentRepository.getOne(contentId);
+            Content content = contentRepository.findById(contentId).orElseThrow();
             contentRepository.delete(content);
-        } catch (EntityNotFoundException ex) {
+            searchableContentRepository.delete(content.getId(), engineId);
+        } catch (NoSuchElementException | IOException ex) {
             throw new ContentNotFoundException();
         }
     }
 
     @Override
-    public Content updateContent(Content newContent) {
+    public Content updateContent(Content newContent, Long engineId) throws IOException {
         try {
-            Content content = contentRepository.getOne(newContent.getId());
+            Content content = contentRepository.findById(newContent.getId()).orElseThrow();
 
             if (newContent.getDescription() != null) {
                 content.setDescription(newContent.getDescription());
@@ -81,36 +118,35 @@ public class ContentServiceImpl implements ContentService {
                 content.setTitle(newContent.getTitle());
             }
 
-            if (newContent.getPopularityInPercentage() != null) {
-                content.setPopularityInPercentage(newContent.getPopularityInPercentage());
-            }
-
             if (newContent.getVisibility() != null) {
                 content.setVisibility(newContent.getVisibility());
             }
 
-            return contentRepository.save(content);
-        } catch (EntityNotFoundException ex) {
+            if (newContent.getAttributes() != null) {
+                content.setAttributes(newContent.getAttributes());
+            }
+
+            Content updatedContent = contentRepository.save(content);
+
+            if (updatedContent.getVisibility() == 0) {
+                searchableContentRepository.delete(updatedContent.getId(), engineId);
+            } else {
+                searchableContentRepository.update(updatedContent, engineId);
+            }
+
+            return updatedContent;
+        } catch (NoSuchElementException ex) {
             throw new ContentNotFoundException();
         }
     }
 
     @Override
     public Content getContent(Long contentId) {
-        Optional<Content> content = contentRepository.findById(contentId);
-        if (content.isEmpty()) {
-            throw new ContentNotFoundException();
-        }
-
-        return content.get();
+        return contentRepository.findById(contentId).orElseThrow(ContentNotFoundException::new);
     }
 
     @Override
-    public List<Content> getPaginatedContentByUserId(String email, Integer page, Integer size) {
-        User loggedInUser = userRepository.findByEmail(email);
-        if (loggedInUser == null) {
-            throw new UserNotFoundException();
-        }
+    public List<Content> getPaginatedContentByEngineId(Long engineId, Integer page, Integer size) {
 
         if (page < 0) {
             page = 0;
@@ -121,6 +157,16 @@ public class ContentServiceImpl implements ContentService {
         }
 
         Pageable pagination = PageRequest.of(page, size);
-        return contentRepository.findAllByUserId(loggedInUser.getId(), pagination);
+        return contentRepository.findAllByEngineId(engineId, pagination);
+    }
+
+    private User getUserFromEmail(String email) throws UserNotFoundException {
+        User loggedInUser = userRepository.findByEmail(email);
+
+        if (loggedInUser == null) {
+            throw new UserNotFoundException();
+        }
+
+        return loggedInUser;
     }
 }
