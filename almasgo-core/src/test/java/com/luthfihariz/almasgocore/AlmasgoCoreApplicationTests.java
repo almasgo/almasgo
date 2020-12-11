@@ -12,9 +12,4 @@ class AlmasgoCoreApplicationTests {
     @Test
     void contextLoads() {
     }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 }

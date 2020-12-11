@@ -17,7 +17,7 @@ public class DashboardAuthController {
     @Autowired
     private AuthMiddleware authMiddleware;
 
-    @PostMapping("/")
+    @PostMapping
     public AuthResponseDto login(@RequestBody AuthRequestDto loginCredential) throws Exception {
         return authMiddleware.login(new User(loginCredential.getEmail(), loginCredential.getPassword()));
     }
