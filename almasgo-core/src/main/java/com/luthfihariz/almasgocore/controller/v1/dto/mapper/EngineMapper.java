@@ -11,7 +11,7 @@ public class EngineMapper implements Mapper<EngineResponseDto, Engine, EngineReq
     @Override
     public EngineResponseDto toResponseDto(Engine engine) {
         return new EngineResponseDto(engine.getId(), engine.getName(),
-                engine.getType().getCode());
+                engine.getType().getCode(), engine.getApiKey());
     }
 
     @Override

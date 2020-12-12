@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class Engine extends DateAudit {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 48)
