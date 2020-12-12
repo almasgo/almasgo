@@ -151,7 +151,7 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
                 .from(searchQuery.getPage() * searchQuery.getSize())
                 .size(searchQuery.getSize())
                 .query(boolQueryBuilder)
-                .sort(searchQuery.getSort().getField(), sortOrder);
+                .sort(searchQuery.getSort().getField()+".keyword", sortOrder);
 
         searchRequest.source(searchSourceBuilder);
         return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);

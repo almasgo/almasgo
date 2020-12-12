@@ -164,7 +164,7 @@ class ContentControllerTest {
                 3,
                 "china",
                 null,
-                new SortRequestDto("attributes.category", SortOrder.ASCENDING));
+                new SortRequestDto("attributes.category", SortOrder.DESCENDING));
         mockMvc.perform(post(url + "/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(searchRequestDto))
@@ -174,6 +174,6 @@ class ContentControllerTest {
                 .andExpect(jsonPath("$.size").value(3))
                 .andExpect(jsonPath("$.results").isArray())
                 .andExpect(jsonPath("$.results[0].content").isMap())
-                .andExpect(jsonPath("$.results[0].content.attributes.category").value("health"));
+                .andExpect(jsonPath("$.results[0].content.attributes.category").value("investment"));
     }
 }
