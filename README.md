@@ -7,6 +7,12 @@ After service is up and running, these are the flow to start using Almasgo:
 3. Add Contents
 4. Start /search -ing
 
+### What is Engine, anyway ?
+Basically engine will contain your contents. You are allowed to add multiple engines, however contents are isolated in a single engine.
+In the future, engine will provide configuration to the search (score sensitivity, content schema, etc).
+
+Engine has type sandbox and production, so by having multiple engines that also one way for managing multiple environments.
+
 Note: docker image is still work in progress
 
 ## Register an Account
@@ -49,7 +55,7 @@ You will get response similiar to this:
 }
 ```
 
-## Start Add Engine
+## Add New Engine
 
 Add an engine can be done through `/dashboard/v1/engine` 
 
@@ -63,12 +69,6 @@ Add an engine can be done through `/dashboard/v1/engine`
 Also put token (from /auth) as Authorization header.
 
 `Authorization: Bearer tokenxxx`
-
-There are currently two types of engine :
-1. sandbox
-2. production
-
-Right now they don't have any difference.
 
 If it successful, you will get similiar response to this:
 
