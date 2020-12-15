@@ -84,5 +84,68 @@ If it successful, you will get similiar response to this:
 Engine id and apiKey will be used later in managing content and performing search.
 
 
-## REST API
-WIP
+## Add Contents
+
+Adding new content can be done either one by one or bulk upload with CSV file.
+
+### Add Single Content
+
+Create POST request to `api/v1/content` with JSON Body 
+
+```json
+{
+    "title": "Title of your content",
+    "description": "Description of your content",
+    "externalUniqueId": "Unique id in your system",
+    "visibility": 1,
+    "tags": [
+        "couple tags",
+        "in an array",
+        "of string"
+    ],
+    "attributes": {
+        "this" : "is for any additional data that you want to add",
+        "category" : "you can add it as key value pair"
+    }
+}
+```
+
+### Add Content Bulk
+
+Create multipart POST request to `api/v1/content/bulk` with key `file`
+
+For CSV file template, you can [download it here](https://docs.google.com/spreadsheets/d/1jirSWy5ly0B1oggsQZ0Q__4QBfpX4fWOTCZIuFLdgnw/edit?usp=sharing).
+
+
+## Search
+
+Search by POST `/api/v1/content/search`
+
+```json
+{
+    "query": "covid vaccine",
+    "filter": {
+        "match": {
+            "category": "health"
+        },
+        "range": {
+            "price": {
+                "lte": 239,
+                "gte": 100,
+                "lt": 240,
+                "gt": 99
+            }
+        }
+    },
+    "sort" : {
+        "field" : "price",
+        "order" : "asc"
+    },
+    "page" : 1,
+    "size" : 20
+}
+```
+
+The only required parameter is `query`, the rest is optional.
+
+Read more about API docs here.
