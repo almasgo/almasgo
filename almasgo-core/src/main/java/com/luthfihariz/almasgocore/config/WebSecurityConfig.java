@@ -36,6 +36,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService authService;
 
+    private static final String[] SWAGGER_WHITE_LIST = {
+            // -- swagger ui
+            //"**/swagger-resources/**",
+            "/swagger-resources/**",
+            "/swagger-ui/",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v2/api-docs"
+            //"/webjars/**"
+    };
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authManager) throws Exception {
         authManager.userDetailsService(authService).passwordEncoder(passwordEncoder());
@@ -58,6 +69,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password")
+                .permitAll()
+                .antMatchers(SWAGGER_WHITE_LIST)
                 .permitAll()
                 .anyRequest()
                 .authenticated()
