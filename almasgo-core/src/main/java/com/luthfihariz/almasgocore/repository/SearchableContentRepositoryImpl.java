@@ -142,16 +142,19 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
             }
         }
 
-        var sortOrder = org.elasticsearch.search.sort.SortOrder.ASC;
-        if (searchQuery.getSort().getOrder().equals(SortOrder.DESCENDING)) {
-            sortOrder = org.elasticsearch.search.sort.SortOrder.DESC;
-        }
 
         SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
                 .from(searchQuery.getPage() * searchQuery.getSize())
                 .size(searchQuery.getSize())
-                .query(boolQueryBuilder)
-                .sort(searchQuery.getSort().getField()+".keyword", sortOrder);
+                .query(boolQueryBuilder);
+
+        if (searchQuery.getSort() != null) {
+            var sortOrder = org.elasticsearch.search.sort.SortOrder.ASC;
+            if (searchQuery.getSort().getOrder().equals(SortOrder.DESCENDING)) {
+                sortOrder = org.elasticsearch.search.sort.SortOrder.DESC;
+            }
+            searchSourceBuilder.sort(searchQuery.getSort().getField() + ".keyword", sortOrder);
+        }
 
         searchRequest.source(searchSourceBuilder);
         return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);

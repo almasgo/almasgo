@@ -176,4 +176,23 @@ class ContentControllerTest {
                 .andExpect(jsonPath("$.results[0].content").isMap())
                 .andExpect(jsonPath("$.results[0].content.attributes.category").value("investment"));
     }
+
+    @Test
+    @Order(7)
+    void searchContentUsingOnlyQueryShouldSuccess() throws Exception {
+        var searchRequestDto = new SearchRequestDto(
+                null,
+                null,
+                "china",
+                null,
+                null);
+        mockMvc.perform(post(url + "/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(searchRequestDto))
+                .header("api-key", "9a09107b54e3040dd2c98b2a5236f27c27013d0e18889be4368cb61bd28586d9")
+                .header("engine-id", 1))
+                .andExpect(jsonPath("$.results").isArray())
+                .andExpect(jsonPath("$.results[0].content").isMap());
+    }
+
 }
