@@ -147,10 +147,10 @@ Search by POST `/api/v1/content/search`
 ```
 
 The only required parameter is `query`, the rest is optional.
-lte => lower than equal
-gte => greater than equal
-lt => lower than
-gt => greater than
+- lte => lower than equal
+- gte => greater than equal
+- lt => lower than
+- gt => greater than
 
 ## Work In Progress
 - Docker Image, to make it easy to get started.
