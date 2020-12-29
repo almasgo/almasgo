@@ -148,4 +148,7 @@ Search by POST `/api/v1/content/search`
 
 The only required parameter is `query`, the rest is optional.
 
-Read more about API docs here.
+## Work In Progress
+- Docker Image, to make it easy to get started.
+- Analytics Engine.
+- Dashboard. We are currently working on a Dashboard that will have capability to manage engines and displaying search analytics. It is based on [Next.js](https://nextjs.org/)
