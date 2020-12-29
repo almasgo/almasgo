@@ -126,10 +126,10 @@ Search by POST `/api/v1/content/search`
     "query": "covid vaccine",
     "filter": {
         "match": {
-            "category": "health"
+            "attributes.category": "health"
         },
         "range": {
-            "price": {
+            "attributes.price": {
                 "lte": 239,
                 "gte": 100,
                 "lt": 240,
@@ -138,7 +138,7 @@ Search by POST `/api/v1/content/search`
         }
     },
     "sort" : {
-        "field" : "price",
+        "field" : "attributes.price",
         "order" : "asc"
     },
     "page" : 1,
@@ -147,6 +147,10 @@ Search by POST `/api/v1/content/search`
 ```
 
 The only required parameter is `query`, the rest is optional.
+lte => lower than equal
+gte => greater than equal
+lt => lower than
+gt => greater than
 
 ## Work In Progress
 - Docker Image, to make it easy to get started.
