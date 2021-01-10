@@ -5,6 +5,6 @@ services:
     container_name: almasgo-core
     build: .
     ports:
-      - 8081:8080
+      - 80:8080
     env_file:
       - .env
