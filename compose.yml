@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  almasgo-core:
+    depends_on: 
+      - almasgo-mysql
+    container_name: almasgo-core
+    build: almasgo-core/
+    ports:
+      - 80:8080
+    env_file: 
+      - almasgo-core/.env
+    networks: 
+      - almasgo-net
+  almasgo-mysql:
+    container_name: almasgo-mysql
+    image: mysql:8.0.22
+    volumes:
+      - mysqldata:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_DATABASE: almasgo_core
+      MYSQL_USER: almasgo_user
+      MYSQL_PASSWORD: almasgopwd
+    ports:
+      - 3306:3308
+    networks: 
+      - almasgo-net
+  almasgo-es1:
+    image: elasticsearch:7.9.3
+    container_name: almasgo-es1
+    environment: 
+      - node.name=almasgo-es1
+      - cluster.name=almasgo-docker-cluster
+      - discovery.seed_hosts=almasgo-es2,almasgo-es3
+      - cluster.initial_master_nodes=almasgo-es1,almasgo-es2,almasgo-es3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits: 
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es01data:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+    networks: 
+      - almasgo-net
+  almasgo-es2:
+    image: elasticsearch:7.9.3
+    container_name: almasgo-es2
+    environment: 
+      - node.name=almasgo-es2
+      - cluster.name=almasgo-docker-cluster
+      - discovery.seed_hosts=almasgo-es1,almasgo-es3
+      - cluster.initial_master_nodes=almasgo-es1,almasgo-es2,almasgo-es3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits: 
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es02data:/usr/share/elasticsearch/data
+    ports:
+      - 9202:9200
+    networks: 
+      - almasgo-net
+  almasgo-es03:
+    image: elasticsearch:7.9.3
+    container_name: almasgo-es3
+    environment: 
+      - node.name=almasgo-es3
+      - cluster.name=almasgo-docker-cluster
+      - discovery.seed_hosts=almasgo-es2,almasgo-es1
+      - cluster.initial_master_nodes=almasgo-es1,almasgo-es2,almasgo-es3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits: 
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es03data:/usr/share/elasticsearch/data
+    ports:
+      - 9203:9200
+    networks: 
+      - almasgo-net
+
+volumes:
+  mysqldata:
+    driver: local
+  es01data:
+    driver: local
+  es02data:
+    driver: local
+  es03data:
+    driver: local
+
+networks:
+  almasgo-net:
+    name: almasgo-net

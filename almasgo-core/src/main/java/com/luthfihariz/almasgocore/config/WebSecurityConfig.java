@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password")
+                .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password", "/actuator/**")
                 .permitAll()
                 .antMatchers(SWAGGER_WHITE_LIST)
                 .permitAll()
