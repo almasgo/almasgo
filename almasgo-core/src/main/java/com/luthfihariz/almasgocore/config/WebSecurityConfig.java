@@ -53,6 +53,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             //"/webjars/**"
     };
 
+    private static final String[] ACTUATOR_WHITE_LIST = {
+            "/actuator/**",
+            //"/actuator/",
+            "/explorer/**",
+            //"/explorer",
+            "/explorer/index.html"
+    };
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authManager) throws Exception {
         authManager.userDetailsService(authService).passwordEncoder(passwordEncoder());
@@ -77,6 +85,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password", "/actuator/**")
                 .permitAll()
                 .antMatchers(SWAGGER_WHITE_LIST)
+                .permitAll()
+                .antMatchers(ACTUATOR_WHITE_LIST)
                 .permitAll()
                 .anyRequest()
                 .authenticated()
