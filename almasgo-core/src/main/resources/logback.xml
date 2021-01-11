@@ -23,6 +23,7 @@
     </appender>
 
     <logger name="org.zalando.logbook.Logbook" level="trace"/>
+    <logger name="org.hibernate.SQL" level="debug"/>
 
     <root level="INFO">
         <appender-ref ref="FILE"/>
