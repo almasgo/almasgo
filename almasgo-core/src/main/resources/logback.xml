@@ -13,7 +13,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_LOCATION}/archived/almasgo-core-%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>logs/archived/almasgo-core-%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -22,9 +22,11 @@
         </rollingPolicy>
     </appender>
 
+    <logger name="org.zalando.logbook.Logbook" level="trace"/>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>
