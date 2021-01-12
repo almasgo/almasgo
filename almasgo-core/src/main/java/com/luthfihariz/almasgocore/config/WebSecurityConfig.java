@@ -50,14 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v2/api-docs"
-            //"/webjars/**"
     };
 
     private static final String[] ACTUATOR_WHITE_LIST = {
             "/actuator/**",
-            //"/actuator/",
             "/explorer/**",
-            //"/explorer",
             "/explorer/index.html"
     };
 
@@ -82,7 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password", "/actuator/**")
+                .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password","/health")
                 .permitAll()
                 .antMatchers(SWAGGER_WHITE_LIST)
                 .permitAll()
