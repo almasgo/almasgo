@@ -10,8 +10,6 @@ services:
       - 80:8080
     env_file: 
       - almasgo-core/.env
-    networks: 
-      - almasgo-net
   almasgo-mysql:
     container_name: almasgo-mysql
     image: mysql:8.0.22
@@ -23,9 +21,7 @@ services:
       MYSQL_USER: almasgo_user
       MYSQL_PASSWORD: almasgopwd
     ports:
-      - 3306:3308
-    networks: 
-      - almasgo-net
+      - 3300:3306
   almasgo-es1:
     image: elasticsearch:7.9.3
     container_name: almasgo-es1
@@ -44,8 +40,6 @@ services:
       - es01data:/usr/share/elasticsearch/data
     ports:
       - 9201:9200
-    networks: 
-      - almasgo-net
   almasgo-es2:
     image: elasticsearch:7.9.3
     container_name: almasgo-es2
@@ -64,8 +58,6 @@ services:
       - es02data:/usr/share/elasticsearch/data
     ports:
       - 9202:9200
-    networks: 
-      - almasgo-net
   almasgo-es03:
     image: elasticsearch:7.9.3
     container_name: almasgo-es3
@@ -84,8 +76,6 @@ services:
       - es03data:/usr/share/elasticsearch/data
     ports:
       - 9203:9200
-    networks: 
-      - almasgo-net
 
 volumes:
   mysqldata:
@@ -96,7 +86,3 @@ volumes:
     driver: local
   es03data:
     driver: local
-
-networks:
-  almasgo-net:
-    name: almasgo-net
