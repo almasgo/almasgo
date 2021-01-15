@@ -1,6 +1,15 @@
 Almasgo is an open-source first full text search engine with analytics. It is based on Java, MySQL and ElasticSearch.
 
 ## Getting Started
+
+Use docker to get started, if you haven't please install and read about docker and docker-compose [here.](https://docs.docker.com/get-docker/)
+
+Clone the repository and start service with docker-compose
+
+```
+docker-compose up -d
+```
+
 After service is up and running, these are the flow to start using Almasgo:
 1. Register an Account
 2. Add New Engine
@@ -13,7 +22,6 @@ In the future, engine will provide configuration to the search (score sensitivit
 
 Engine has type sandbox and production, so by having multiple engines that also one way for managing multiple environments.
 
-Note: docker image is still work in progress
 
 ## Register an Account
 Register an account can be done through a POST Request to `/dashboard/v1/user` and provide JSON Body
