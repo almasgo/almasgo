@@ -12,10 +12,11 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
+@Table(indexes = @Index(name = "engine_api_key_idx", columnList = "apiKey", unique = true))
 public class Engine extends DateAudit {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 48)

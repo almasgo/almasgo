@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luthfihariz.almasgocore.controller.dto.request.FilterRequestDto;
 import com.luthfihariz.almasgocore.controller.dto.request.RangeFilterDto;
+import com.luthfihariz.almasgocore.controller.dto.request.SortOrder;
 import com.luthfihariz.almasgocore.controller.dto.response.ContentBulkResponseDto;
 import com.luthfihariz.almasgocore.model.Content;
 import com.luthfihariz.almasgocore.security.AuthenticationFacade;
@@ -141,10 +142,19 @@ public class SearchableContentRepositoryImpl implements SearchableContentReposit
             }
         }
 
+
         SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource()
                 .from(searchQuery.getPage() * searchQuery.getSize())
                 .size(searchQuery.getSize())
                 .query(boolQueryBuilder);
+
+        if (searchQuery.getSort() != null) {
+            var sortOrder = org.elasticsearch.search.sort.SortOrder.ASC;
+            if (searchQuery.getSort().getOrder().equals(SortOrder.DESCENDING)) {
+                sortOrder = org.elasticsearch.search.sort.SortOrder.DESC;
+            }
+            searchSourceBuilder.sort(searchQuery.getSort().getField() + ".keyword", sortOrder);
+        }
 
         searchRequest.source(searchSourceBuilder);
         return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);

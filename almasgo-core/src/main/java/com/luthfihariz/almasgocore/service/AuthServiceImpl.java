@@ -1,5 +1,6 @@
 package com.luthfihariz.almasgocore.service;
 
+import com.luthfihariz.almasgocore.exception.UserNotFoundException;
 import com.luthfihariz.almasgocore.security.JwtTokenProvider;
 import com.luthfihariz.almasgocore.controller.dto.response.AuthResponseDto;
 import com.luthfihariz.almasgocore.model.User;
@@ -51,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new UserNotFoundException();
         }
     }
 }

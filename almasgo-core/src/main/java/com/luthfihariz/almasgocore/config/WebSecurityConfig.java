@@ -18,9 +18,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -35,6 +41,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService authService;
+
+    private static final String[] SWAGGER_WHITE_LIST = {
+            // -- swagger ui
+            //"**/swagger-resources/**",
+            "/swagger-resources/**",
+            "/swagger-ui/",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v2/api-docs"
+    };
+
+    private static final String[] ACTUATOR_WHITE_LIST = {
+            "/actuator/**",
+            "/explorer/**",
+            "/explorer/index.html"
+    };
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authManager) throws Exception {
@@ -57,7 +79,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/dashboard/v1/auth/", "/dashboard/v1/user/", "/dashboard/v1/user/forgot-password/")
+                .antMatchers("/dashboard/v1/auth", "/dashboard/v1/user", "/dashboard/v1/user/forgot-password","/health")
+                .permitAll()
+                .antMatchers(SWAGGER_WHITE_LIST)
+                .permitAll()
+                .antMatchers(ACTUATOR_WHITE_LIST)
                 .permitAll()
                 .anyRequest()
                 .authenticated()

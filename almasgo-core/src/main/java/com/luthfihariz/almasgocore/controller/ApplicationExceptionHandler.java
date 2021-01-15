@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(ApplicationExceptionHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {

@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 public class SearchQueryMapper {
 
     public static SearchQuery fromSearchRequestDto(SearchRequestDto searchRequestDto) {
-        return new SearchQuery(searchRequestDto.getQuery(), searchRequestDto.getFilter(), searchRequestDto.getPage(), searchRequestDto.getSize());
+        return new SearchQuery(searchRequestDto.getQuery(), searchRequestDto.getFilter(),
+                searchRequestDto.getSort(), searchRequestDto.getPage(), searchRequestDto.getSize());
     }
 
     public static SearchResponseDto toSearchResponseDto(SearchResponse searchResponse, SearchRequestDto searchRequestDto) {
