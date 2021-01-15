@@ -1,15 +1,27 @@
-Almasgo is an open-source first full text search engine with analytics. It is based on Java, MySQL and ElasticSearch.
+Almasgo is an open-source first full text search as a service. It is based on Java, MySQL and ElasticSearch.
 
 ## Getting Started
 
 Use docker to get started, if you haven't please install and read about docker and docker-compose [here.](https://docs.docker.com/get-docker/)
 
-Clone the repository and start service with docker-compose
+Clone the repository and create an .env in the `almasgo-core` folder like this:
+
+```
+MYSQL_HOST=almasgo-mysql
+MYSQL_PORT=3306
+MYSQL_USERNAME=almasgo_user
+MYSQL_PASSWORD=almasgopwd
+
+# Elastic related
+ELASTICSEARCH_HOST=almasgo-es1:9200
+```
+
+And start the service using docker-compose:
 
 ```
 docker-compose up -d
 ```
-There should be 5 services up and running:
+By default, there should be 5 services up and running:
 1. almasgo-core (Java Spring)
 2. almasgo-mysql (MySQL)
 3. almasgo-es1 (ElasticSearch node 1)
@@ -24,7 +36,7 @@ After service is up and running, these are the flow to start using Almasgo:
 3. Add Contents
 4. Start /search -ing
 
-### What is Engine, anyway ?
+### What is Engine ?
 Basically engine will contain your contents. You are allowed to add multiple engines, however contents are isolated in a single engine.
 In the future, engine will provide configuration to the search (score sensitivity, content schema, etc).
 
