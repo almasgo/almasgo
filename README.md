@@ -4,7 +4,7 @@ Almasgo is an open-source first full text search as a service. It is based on Ja
 
 Use docker to get started, if you haven't please install and read about docker and docker-compose [here.](https://docs.docker.com/get-docker/)
 
-Clone the repository and create an .env in the `almasgo-core` folder like this:
+Clone the repository and create an .env file for Java Spring in the `almasgo-core` folder like this:
 
 ```
 MYSQL_HOST=almasgo-mysql
@@ -12,7 +12,6 @@ MYSQL_PORT=3306
 MYSQL_USERNAME=almasgo_user
 MYSQL_PASSWORD=almasgopwd
 
-# Elastic related
 ELASTICSEARCH_HOST=almasgo-es1:9200
 ```
 
