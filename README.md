@@ -9,6 +9,14 @@ Clone the repository and start service with docker-compose
 ```
 docker-compose up -d
 ```
+There should be 5 services up and running:
+1. almasgo-core (Java Spring)
+2. almasgo-mysql (MySQL)
+3. almasgo-es1 (ElasticSearch node 1)
+4. almasgo-es2 (ElasticSearch node 2)
+5. almasgo-es3 (ElasticSearch node 3)
+
+You can customize number of elastic nodes and other configuration related to ES and MySQL in the `docker-compose.yml` file.
 
 After service is up and running, these are the flow to start using Almasgo:
 1. Register an Account
