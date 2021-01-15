@@ -109,8 +109,12 @@ If it successful, you will get similiar response to this:
 }
 ```
 
-Engine id and apiKey will be used later in managing content and performing search.
+In the following API, you will need to use `id` and `apiKey` as Headers, for example:
 
+```
+api-key: 90cf4eaeb31c8c4476926938be6be2e4681aa90c9520161195f383590b414841
+engine-id: 5
+```
 
 ## Add Contents
 
