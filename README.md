@@ -181,6 +181,8 @@ The only required parameter is `query`, the rest is optional.
 - gt => greater than
 
 ## Work In Progress
-- Docker Image, to make it easy to get started.
 - Analytics Engine.
 - Dashboard. We are currently working on a Dashboard that will have capability to manage engines and displaying search analytics. It is based on [Next.js](https://nextjs.org/)
+
+## Feedback and Contribution
+We are more than welcome to have feedback and contribution to this repo, please create an issue and discussed!
