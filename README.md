@@ -1,4 +1,4 @@
-Almasgo is an open-source first full text search as a service. It is based on Java, MySQL and ElasticSearch.
+Almasgo is an open-source REST API for full text search engine. It is based on Java, MySQL and ElasticSearch.
 
 ## Getting Started
 
