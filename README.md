@@ -21,11 +21,11 @@ And start the service using docker-compose:
 docker-compose up -d
 ```
 By default, there should be 5 services up and running:
-1. almasgo-core (Java Spring)
-2. almasgo-mysql (MySQL)
-3. almasgo-es1 (ElasticSearch node 1)
-4. almasgo-es2 (ElasticSearch node 2)
-5. almasgo-es3 (ElasticSearch node 3)
+1. almasgo-core (Java Spring) - will be running at port 80
+2. almasgo-mysql (MySQL) - will be running at port 3300
+3. almasgo-es1 (ElasticSearch node 1) - will be running at port 9201
+4. almasgo-es2 (ElasticSearch node 2) - will be running at port 9202
+5. almasgo-es3 (ElasticSearch node 3) - will be running at port 9203
 
 You can customize number of elastic nodes and other configuration related to ES and MySQL in the `docker-compose.yml` file.
 
